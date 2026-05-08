@@ -611,7 +611,7 @@ void CodeCell::SleepRotationTrigger() {
     LED(0, 0, 0);  // turn off LEDs
   }
 
-  // Quiet other peripherals (unchanged)
+  // Quiet other peripherals
   pinMode(1, INPUT);
   pinMode(2, INPUT);
   pinMode(3, INPUT);

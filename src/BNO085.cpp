@@ -117,6 +117,26 @@ bool BNO085::enableWakeOnTapDetector(uint32_t interval_us) {
   return status == SH2_OK;
 }
 
+bool BNO085::enableWakeOnRotation(uint32_t interval_us) {
+  sh2_SensorConfig_t rotationCfg{};
+  // disable all other sensors…
+  for (uint8_t sensorId = 1; sensorId <= SH2_MAX_SENSOR_ID; sensorId++) {
+    if (sensorId != SH2_ROTATION_VECTOR) {
+      sh2_SensorConfig_t disableCfg{};
+      disableCfg.reportInterval_us = 0;
+      sh2_setSensorConfig(static_cast<sh2_SensorId_t>(sensorId), &disableCfg);
+      sh2_service();  // flush the Get Feature Response
+    }
+  }
+  // configure rotation vector
+  rotationCfg.reportInterval_us = interval_us;
+  rotationCfg.wakeupEnabled = true;
+  rotationCfg.alwaysOnEnabled = true;
+  int status = sh2_setSensorConfig(SH2_ROTATION_VECTOR, &rotationCfg);
+  sh2_service();  // flush the rotation vector response
+  return status == SH2_OK;
+}
+
 bool BNO085::s_noResetOpen = false;
 
 void BNO085::setNoResetOpen(bool en) {

@@ -94,6 +94,7 @@ public:
 	static bool s_noResetOpen;
 
 	bool enableWakeOnTapDetector(uint32_t interval_us = 0);  // wake sensor
+	bool enableWakeOnRotation(uint32_t interval_us = 0);     // wake sensor
 
 	sh2_ProductIds_t prodIds;  ///< The product IDs returned by the sensor
 	sh2_SensorValue_t sensorValue;

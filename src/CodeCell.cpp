@@ -603,6 +603,72 @@ void CodeCell::SleepTapTrigger() {
   esp_deep_sleep_start();
 }
 
+void CodeCell::SleepRotationTrigger() {
+  Serial.println(">> Going To Sleep..");
+  Serial.println(" ");
+
+  if (!_wakeup_flag) {
+    LED(0, 0, 0);  // turn off LEDs
+  }
+
+  // Quiet other peripherals (unchanged)
+  pinMode(1, INPUT);
+  pinMode(2, INPUT);
+  pinMode(3, INPUT);
+  pinMode(5, INPUT);
+  pinMode(6, INPUT);
+  pinMode(7, INPUT);
+
+  // Clear VCNL4040 interrupt flags
+  _i2c_write_array[_i2c_write_size++] = VCNL4040_INT_FLAG;
+  _i2c_write_array[_i2c_write_size++] = 0x00;  // LSB
+  _i2c_write_array[_i2c_write_size++] = 0x00;  // MSB
+  if (!I2CWrite(VCNL4040_ADDRESS, _i2c_write_array, _i2c_write_size)) {
+    Serial.println(">> Error: Light Sensor not found");
+  }
+  _i2c_write_size = 0;
+  _i2c_write_array[_i2c_write_size++] = VCNL4040_PS_CONF3_REG;
+  _i2c_write_array[_i2c_write_size++] = 0x00;
+  _i2c_write_array[_i2c_write_size++] = 0x00;
+  if (!I2CWrite(VCNL4040_ADDRESS, _i2c_write_array, _i2c_write_size)) {
+    Serial.println(">> Error: Light Sensor not found");
+  }
+  _i2c_write_size = 0;
+  _i2c_write_array[_i2c_write_size++] = VCNL4040_ALS_CONF_REG;
+  _i2c_write_array[_i2c_write_size++] = (0x01 & 0xFF);
+  _i2c_write_array[_i2c_write_size++] = ((0x01 >> 8) & 0xFF);
+  if (!I2CWrite(VCNL4040_ADDRESS, _i2c_write_array, _i2c_write_size)) {
+    Serial.println(">> Error: Light Sensor not found");
+  }
+  _i2c_write_size = 0;
+  _i2c_write_array[_i2c_write_size++] = VCNL4040_PS_CONF1_REG;
+  _i2c_write_array[_i2c_write_size++] = (0x01 & 0xFF);
+  _i2c_write_array[_i2c_write_size++] = ((0x01 >> 8) & 0xFF);
+  if (!I2CWrite(VCNL4040_ADDRESS, _i2c_write_array, _i2c_write_size)) {
+    Serial.println(">> Error: Light Sensor not found");
+  }
+  _i2c_write_size = 0;
+
+  digitalWrite(10, LOW);
+  pinMode(10, INPUT);
+  digitalWrite(LED_ON_PIN, LOW);
+
+  bool ok = Motion.enableWakeOnRotation(10000);  // Enable rotation as wake sensor
+  Motion.modeSleep();                            // Put sensor hub into device sleep
+
+  Wire.end();  // Release I2C bus lines
+  pinMode(8, INPUT);
+  pinMode(9, INPUT);
+
+  digitalWrite(SENS_ON_PIN, HIGH);  // Hold the IMU’s LDO enable pin high
+  gpio_hold_en((gpio_num_t)SENS_ON_PIN);
+
+  delay(100);
+
+  esp_deep_sleep_enable_gpio_wakeup(1ULL << MOTION_WAKEUP_PIN, ESP_GPIO_WAKEUP_GPIO_LOW);
+  esp_deep_sleep_start();
+}
+
 #endif
 
 

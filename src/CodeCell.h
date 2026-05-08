@@ -138,6 +138,7 @@ public:
   void SleepLightTrigger(uint16_t trigger_threshold);
   void SleepDarkTrigger(uint16_t trigger_threshold);
   void SleepTapTrigger();
+  void SleepRotationTrigger();
 #endif
   bool WakeUpCheck();
   bool Run(uint8_t run_frequency);

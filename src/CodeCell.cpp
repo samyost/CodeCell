@@ -653,7 +653,7 @@ void CodeCell::SleepRotationTrigger() {
   pinMode(10, INPUT);
   digitalWrite(LED_ON_PIN, LOW);
 
-  Motion.enableWakeOnRotation(10000);  // Enable rotation as wake sensor
+  Motion.enableWakeOnRotation(10000);  // Enable rotation as wake sensor (10ms interval)
   Motion.modeSleep();                  // Put sensor hub into device sleep
 
   Wire.end();  // Release I2C bus lines

@@ -99,7 +99,7 @@ bool BNO085::enableReport(sh2_SensorId_t sensorId, uint32_t interval_us,
 
 bool BNO085::enableWakeOnTapDetector(uint32_t interval_us) {
   sh2_SensorConfig_t tapCfg{};
-  // disable all other sensors…
+  // disable all other sensors...
   for (uint8_t sensorId = 1; sensorId <= SH2_MAX_SENSOR_ID; sensorId++) {
     if (sensorId != SH2_TAP_DETECTOR) {      
     sh2_SensorConfig_t disableCfg{};
@@ -119,7 +119,8 @@ bool BNO085::enableWakeOnTapDetector(uint32_t interval_us) {
 
 bool BNO085::enableWakeOnRotation(uint32_t interval_us) {
   sh2_SensorConfig_t rotationCfg{};
-  // disable all other sensors…
+  // disable all other sensors...
+  // SH2 sensor IDs are a compact, small range from 1..SH2_MAX_SENSOR_ID.
   for (uint8_t sensorId = 1; sensorId <= SH2_MAX_SENSOR_ID; sensorId++) {
     if (sensorId != SH2_ROTATION_VECTOR) {
       sh2_SensorConfig_t disableCfg{};
